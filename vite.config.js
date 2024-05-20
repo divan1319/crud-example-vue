@@ -25,17 +25,12 @@ export default defineConfig({
         icons:[
           {
             src:'images/hospital-1.png',
-            sizes:'192x192',
+            sizes:'128x128',
             type:'image/png'
           },
           {
             src:'images/hospital-2.png',
             sizes:'256x256',
-            type:'image/png'
-          },
-          {
-            src:'images/hospital-3.png',
-            sizes:'384x384',
             type:'image/png'
           },
           {
