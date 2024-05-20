@@ -11,11 +11,22 @@ import ColumnGroup from "primevue/columngroup"; // optional
 import Row from "primevue/row"; // optional*/
 import { products as ProductData } from "@/data/products";
 import { useProductStore } from "@/stores/products";
-const products = ref(useProductStore().hasProducts);
+import { getProducts,deleteProduct } from "@/services/create-user";
 
-const deleteProduct = (id)=>{
-  useProductStore().delProduct(id)
+const products = ref(useProductStore().hasProducts);
+const deletingProduct = (id)=>{
+  deleteProduct(id)
+  getProducts().then(res=>{
+    console.log(res)
+    useProductStore().gettingProducts(res)
+  })
 }
+onMounted(()=>{
+  getProducts().then(res=>{
+    console.log(res)
+    useProductStore().gettingProducts(res)
+  })
+})
 </script>
 <template>
   <div class="max-w-7xl mx-auto py-5 h-screen">
@@ -28,7 +39,7 @@ const deleteProduct = (id)=>{
         <Column header="Accion">
           <template #body="slotProps">
             <div class="flex flex-col md:flex-row gap-2">
-              <Button type="button" label="Eliminar" severity="danger" @click="deleteProduct(slotProps.data.id)" />
+              <Button type="button" label="Eliminar" severity="danger" @click="deletingProduct(slotProps.data.id)" />
               <Button type="button" label="Editar" severity="warning" />
             </div>
           </template>

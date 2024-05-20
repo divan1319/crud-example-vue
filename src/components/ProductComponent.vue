@@ -4,7 +4,8 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
 import Message from 'primevue/message';
-import { reactive,watchEffect,ref} from 'vue';
+import { reactive,watchEffect} from 'vue';
+import { createProduct, getProducts } from '@/services/create-user';
 import { useProductStore } from '@/stores/products';
 
 
@@ -23,6 +24,7 @@ const actionModal = ()=>{
     emit('close')
 }
 
+
 const onSubmit = ()=>{
     if(formState.name == '' || formState.price == 0 || formState.amount == 0) return formState.error = true
     
@@ -32,8 +34,11 @@ const onSubmit = ()=>{
         price:formState.price,
         amount:formState.amount
     }
-
-    const add = useProductStore().addProduct(data)
+    getProducts().then(res=>{
+    console.log(res)
+    useProductStore().gettingProducts(res)
+  })
+    createProduct(data)
     cleanInputs()
     actionModal()
 }
@@ -52,10 +57,7 @@ watchEffect(()=>{
     }
 })
 
-watchEffect(()=>{
-    const lastId = useProductStore().products[useProductStore().products.length - 1].id
-    formState.id = lastId + 1   
-})
+
 </script>
 <template>
   <div class="card flex justify-center">
@@ -91,7 +93,7 @@ watchEffect(()=>{
           severity="secondary"
           @click="actionModal"
         ></Button>
-        <Button type="button" label="Guardar" @click="onSubmit"></Button>
+        <Button type="button" label="Guardar Datos" @click="onSubmit"></Button>
       </div>
     </Dialog>
   </div>

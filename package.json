@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.43.2",
     "axios": "^1.6.8",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
@@ -21,6 +22,7 @@
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
-    "vite": "^5.2.8"
+    "vite": "^5.2.8",
+    "vite-plugin-pwa": "^0.20.0"
   }
 }

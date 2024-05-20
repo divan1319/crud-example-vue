@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useAuthStore = defineStore('auth', ()=> {
-    const isAuth = ref(false)
+    const isAuth = ref(true)
     const credetentials = {
         username:'admin',
         pass:'admin1234'
