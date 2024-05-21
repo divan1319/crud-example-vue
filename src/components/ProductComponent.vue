@@ -1,63 +1,74 @@
 <script setup>
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import InputNumber from 'primevue/inputnumber';
-import Message from 'primevue/message';
-import { reactive,watchEffect} from 'vue';
-import { createProduct, getProducts } from '@/services/create-user';
-import { useProductStore } from '@/stores/products';
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import InputNumber from "primevue/inputnumber";
+import Message from "primevue/message";
+import { reactive, watchEffect } from "vue";
+import { createProduct, getProducts } from "@/services/create-user";
+import { useProductStore } from "@/stores/products";
+import { ref } from "vue";
+import { addItem, clearItems, getItems } from "@/db";
 
-
-const props = defineProps(['visible'])
-const emit = defineEmits(['close'])
+const props = defineProps(["visible"]);
+const emit = defineEmits(["close"]);
 
 const formState = reactive({
-    id:null,
-    name:'',
-    price:0,
-    amount:0,
-    error:false
-})
+  id: null,
+  name: "",
+  price: 0,
+  amount: 0,
+  error: false,
+});
 
-const actionModal = ()=>{
-    emit('close')
-}
+const items = ref([]);
 
+const actionModal = () => {
+  emit("close");
+};
 
-const onSubmit = ()=>{
-    if(formState.name == '' || formState.price == 0 || formState.amount == 0) return formState.error = true
-    
-    const data = {
-        id:formState.id,
-        name:formState.name,
-        price:formState.price,
-        amount:formState.amount
-    }
-    getProducts().then(res=>{
-    console.log(res)
-    useProductStore().gettingProducts(res)
-  })
-    createProduct(data)
-    cleanInputs()
-    actionModal()
-}
+const onSubmit = async () => {
+  if (formState.name == "" || formState.price == 0 || formState.amount == 0)
+    return (formState.error = true);
+  console.log('prueba 1 con esto')
 
-const cleanInputs = ()=>{
-    formState.name = ''
-    formState.price = 0
-    formState.amount = 0
-}
+  const item = {
+    name:formState.name,
+    price: formState.price,
+    amount: formState.amount,
+  };
+  ///almacena localmente
+  await addItem(item);
 
-watchEffect(()=>{
-    if(formState.error){
-        setTimeout(() => {
-            formState.error = false
-        }, 5000);
-    }
-})
+  ///intentando sincronizar con supabase
+  try {
+    await createProduct(item);
+    await clearItems();
+    getProducts().then((res) => {
+      console.log(res);
+      useProductStore().gettingProducts(res);
+    });
+  } catch (error) {
+    console.log('error syncing with supabase',error);
+  }
 
+  cleanInputs();
+  actionModal();
+};
 
+const cleanInputs = () => {
+  formState.name = "";
+  formState.price = 0;
+  formState.amount = 0;
+};
+
+watchEffect(() => {
+  if (formState.error) {
+    setTimeout(() => {
+      formState.error = false;
+    }, 5000);
+  }
+});
 </script>
 <template>
   <div class="card flex justify-center">
@@ -73,18 +84,39 @@ watchEffect(()=>{
       >
       <div class="flex items-center gap-3 mb-3">
         <label for="nombre" class="font-semibold w-[6rem]">Nombre</label>
-        <InputText v-model="formState.name" id="nombre" class="flex-auto" autocomplete="off" />
+        <InputText
+          v-model="formState.name"
+          id="nombre"
+          class="flex-auto"
+          autocomplete="off"
+        />
       </div>
       <div class="flex items-center gap-3 mb-5">
-        <label for="minmaxfraction" class="font-semibold w-[6rem]">Precio</label>
-        <InputNumber v-model="formState.price" class="flex-auto" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" />
+        <label for="minmaxfraction" class="font-semibold w-[6rem]"
+          >Precio</label
+        >
+        <InputNumber
+          v-model="formState.price"
+          class="flex-auto"
+          inputId="minmaxfraction"
+          :minFractionDigits="2"
+          :maxFractionDigits="5"
+        />
       </div>
       <div class="flex items-center gap-3 mb-5">
         <label for="integer" class="font-semibold w-[6rem]">Cantidad</label>
-        <InputNumber v-model="formState.amount" inputId="integer"  id="cantidad" class="flex-auto" autocomplete="off" />
+        <InputNumber
+          v-model="formState.amount"
+          inputId="integer"
+          id="cantidad"
+          class="flex-auto"
+          autocomplete="off"
+        />
       </div>
       <div class="flex items-center gap-3 mb-5">
-        <Message v-if="formState.error" severity="error">Debe de llenar todos los datos correctamente</Message>
+        <Message v-if="formState.error" severity="error"
+          >Debe de llenar todos los datos correctamente</Message
+        >
       </div>
       <div class="flex justify-end gap-2">
         <Button

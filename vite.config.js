@@ -13,7 +13,21 @@ export default defineConfig({
       injectRegister:'auto',
       workbox:{
         globPatterns:['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
-        cleanupOutdatedCaches:false
+        cleanupOutdatedCaches:false,
+        runtimeCaching:[
+          {
+            urlPattern: /\/api\/.*\/*.json/,
+            handler:'NetworkOnly',
+            options:{
+              backgroundSync:{
+                name:'my-queue',
+                options:{
+                  maxRetentionTime:24*60
+                }
+              }
+            }
+          }
+        ]
       },
       manifest:{
         name:'Prueba PWA',
